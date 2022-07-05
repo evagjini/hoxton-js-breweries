@@ -117,7 +117,7 @@ function renderListOfBrewery(){
     }).then(response=>response.json())
     .then(data=>{
         data.forEach((brewery: Brewery) => {
-            let liEl=document.createElement('li')
+            let liEl= document.createElement('li')
 
 
 
@@ -132,6 +132,23 @@ function renderListOfBrewery(){
             adressSection.className=('adress')
 
             let h3El= document.createElement('h3')
+            h3El.textContent='Adress:'
+
+            let pEl= document.createElement('p')
+            pEl.textContent= brewery.street
+
+            let paraEl= document.createElement('p')
+            paraEl.textContent= `${brewery.city}`
+                
+
+            let phoneSection= document.createElement('section')
+            phoneSection.classList.add('phone')
+
+            let h3PhoneEl= document.createElement('h3')
+            h3PhoneEl.textContent= 'Phone:'
+
+            let paragraphPhone= document.createElement('p')
+            paragraphPhone.textContent=brewery.phone
             
             
         });
