@@ -70,7 +70,7 @@ let state: State ={
 let mainEl = document.querySelector('main')
 
 
-function renderSearchBar(){
+function renderHeader(){
 
 
     let h1El = document.createElement('h1')
@@ -83,8 +83,10 @@ function renderSearchBar(){
     form.id= 'search-breweries-form'
     form.autocomplete= 'off'
     let searchLabel= document.createElement('label')
-    searchLabel.classList.add('search-breweries')
-    searchLabel.textContent= 'Search breweries:'
+    searchLabel.htmlFor=('search-breweries')
+    
+    let searchLabelH2= document.createElement('h2')
+    searchLabelH2.textContent= 'Search breweries:'
 
 
     let input= document.createElement('input')
@@ -149,7 +151,7 @@ function renderListOfBrewery(){
 
             let paragraphPhone= document.createElement('p')
             paragraphPhone.textContent=brewery.phone
-            
+
             
         });
     })
