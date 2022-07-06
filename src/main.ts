@@ -67,10 +67,12 @@ let state: State ={
 
 
 
-let mainEl = document.querySelector('main')
+
 
 
 function renderHeader(){
+    let mainEl = document.querySelector('main')
+    if(mainEl=== null) return
 
 
     let h1El = document.createElement('h1')
@@ -94,7 +96,7 @@ function renderHeader(){
     input.name='search-breweries'
     input.type='text'
 
-
+searchLabel.append(searchLabelH2)
 form.append(searchLabel, input)
 searchBarHeader.append(form)
 mainEl?.append(h1El, searchBarHeader)
@@ -158,3 +160,16 @@ function renderListOfBrewery(){
     
 
 }
+
+
+function render(){
+    let mainEl= document.querySelector('main')
+    if (mainEl=== null) return
+    mainEl.textContent= ''
+
+
+    renderHeader ()
+
+
+}
+render()
