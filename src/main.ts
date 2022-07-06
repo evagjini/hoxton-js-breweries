@@ -1,67 +1,169 @@
 
-type Brewery= {
-        address_2: null;
-        address_3: null;
-        brewery_type: string;
-        city: string;
-        country: string;
-        county_province: null;
-        created_at: string;
-        id: number;
-        latitude: string;
-        longitude: string;
-        name: string;
-        obdb_id: string;
-        phone:string;
-        postal_code:string;
-        state:string;
-        street:string;
-        updated_at:string;
-        website_url:string;
-     
-}
 
 
-
-
-const breweries:Brewery[] = [
-    {
-      address_2: null,
-      address_3: null,
-      brewery_type: 'large',
-      city: 'San Diego',
-      country: 'United States',
-      county_province: null,
-      created_at: '2018-07-24T00:00:00.000Z',
-      id: 8041,
-      latitude: '32.714813',
-      longitude: '-117.129593',
-      name: '10 Barrel Brewing Co',
-      obdb_id: '10-barrel-brewing-co-san-diego',
-      phone: '6195782311',
-      postal_code: '92101-6618',
-      state: 'California',
-      street: '1501 E St',
-      updated_at: '2018-08-23T00:00:00.000Z',
-      website_url: 'http://10barrel.com'
-    }
-  ]
+type brewery = {
+    address_2: string | null;
+    address_3: string | null;
+    brewery_type: string | null;
+    city: string | null;
+    country: string | null;
+    county_province: string | null;
+    created_at: string | null;
+    id: string;
+    latitude: string | null;
+    longitude: string | null;
+    name: string;
+    obdb_id: string | null;
+    phone: string | null;
+    postal_code: string;
+    state: string;
+    street: string | null;
+    updated_at: string;
+    website_url: string | null;
+  };
   
+  type State = {
+    USState: string;
+    breweries: brewery[];
+  };
+  
+  let state: State = {
+    USState: "",
+    breweries: [],
+  };
+  
+  function getBreweriesForState() {
+    fetch(`https://api.openbrewerydb.org/breweries?by_state=${state.USState}&per_page=10`)
+      .then((resp) => resp.json())
+      .then((breweries) => {
+        state.breweries = breweries;
+        render();
+      });
+  }
+  
+  function renderHeader() {
+    let mainEl = document.querySelector("main");
+    if (mainEl === null) return;
+  
+    let h1 = document.createElement("h1");
+    h1.textContent = "List of Breweries";
+  
+    let header = document.createElement("header");
+    header.className = "search-bar";
+  
+    let form = document.createElement("form");
+    form.id = "search-breweries-form";
+    form.autocomplete = "off";
+  
+    let label = document.createElement("label");
+    label.htmlFor = "search-breweries";
+  
+    let h2 = document.createElement("h2");
+    h2.textContent = "Search breweries:";
+  
+    let input = document.createElement("input");
+    input.id = "search-breweries";
+    input.name = "search-breweries";
+    input.type = "text";
+  
+    label.append(h2);
+    form.append(label, input);
+    header.append(form);
+    mainEl.append(h1, header);
+  }
+  
+  function renderBreweryList() {
+    let mainEl = document.querySelector("main");
+    if (mainEl === null) return;
+  
+    let article = document.createElement("article");
+  
+    let ul = document.createElement("ul");
+    ul.className = "breweries-list";
+  
+    for (let brewery of state.breweries) {
+      renderSingleBrewery(brewery, ul);
+    }
+  
+    article.append(ul);
+    mainEl.append(article);
+  }
+  
+  function renderSingleBrewery(brewery: brewery, ul: HTMLUListElement) {
+    let li = document.createElement("li");
+  
+    let h2El = document.createElement("h2");
+    h2El.textContent = brewery.name;
+  
+    let divEl = document.createElement("div");
+    divEl.className = "type";
+    divEl.textContent = brewery.brewery_type;
+  
+    let sectionAdd = document.createElement("section");
+    sectionAdd.className = "address";
+  
+    let h3Add = document.createElement("h3");
+    h3Add.textContent = "Address:";
+  
+    let pAddress = document.createElement("p");
+    pAddress.textContent = brewery.street;
+  
+    let pAdd = document.createElement("p");
+  
+    let strongAdd = document.createElement("strong");
+    strongAdd.textContent = `${brewery.city}, ${brewery.postal_code}`;
+  
+    let sectionPhone = document.createElement("section");
+    sectionPhone.className = "phone";
+  
+    let h3Phone = document.createElement("h3");
+    h3Phone.textContent = "Phone:";
+  
+    let pPhone = document.createElement("p");
+    pPhone.textContent = brewery.phone ? brewery.phone : "N/A";
+  
+    let sectionLink = document.createElement("section");
+    sectionLink.className = "link";
+  
+    let aLink = document.createElement("a");
+    if (brewery.website_url) {
+      aLink.href = brewery.website_url ? brewery.website_url : "#";
+      aLink.target = "_blank";
+      aLink.textContent = "Visit Website";
+    } else {
+      aLink.textContent = "No Website";
+    }
+  
+    li.append(h2El, divEl, sectionAdd, sectionPhone, sectionLink);
+    sectionAdd.append(h3Add, pAddress, pAdd);
+    pAdd.append(strongAdd);
+    sectionPhone.append(h3Phone, pPhone);
+    sectionLink.append(aLink);
+    ul.append(li);
+  }
+  
+  function render() {
+    let mainEl = document.querySelector("main");
+    if (mainEl === null) return;
+    mainEl.textContent = "";
+  
+    renderHeader();
+    renderBreweryList();
+  }
+  
+  function listenToSelectStateForm() {
+    let formEl = document.querySelector<HTMLFormElement>("#select-state-form");
+    formEl?.addEventListener("submit", function (event) {
+      event.preventDefault();
+      let USState = formEl["select-state"].value;
+      state.USState = USState;
+      getBreweriesForState();
+    });
+  }
+  
+  listenToSelectStateForm();
+  render();
 
-type State ={
-    USState:string,
-    breweries:Brewery[]
-}
-
-
-let state: State ={
-    USState:'',
-    breweries:[]
-}
-
-
-//Q: Which state are we looking for? state.USState
-// Q: what breweries do we need to display? state.breweries
 
 
 
@@ -70,106 +172,26 @@ let state: State ={
 
 
 
-function renderHeader(){
-    let mainEl = document.querySelector('main')
-    if(mainEl=== null) return
-
-
-    let h1El = document.createElement('h1')
-    h1El.textContent= 'List of Breweries'
-
-    let searchBarHeader= document.createElement('header')
-    searchBarHeader.classList.add('search-bar')
-    
-    let form = document.createElement('form')
-    form.id= 'search-breweries-form'
-    form.autocomplete= 'off'
-    let searchLabel= document.createElement('label')
-    searchLabel.htmlFor=('search-breweries')
-    
-    let searchLabelH2= document.createElement('h2')
-    searchLabelH2.textContent= 'Search breweries:'
-
-
-    let input= document.createElement('input')
-    input.id='search-breweries'
-    input.name='search-breweries'
-    input.type='text'
-
-searchLabel.append(searchLabelH2)
-form.append(searchLabel, input)
-searchBarHeader.append(form)
-mainEl?.append(h1El, searchBarHeader)
-    
-
-}
-
-function renderListOfBrewery(){
-
-    let article= document.createElement('article')
-
-    let ulEl= document.createElement('ul')
-    ulEl.className=('breweries-list')
-
-    fetch(`https://api.openbrewerydb.org/breweries?by_state=${state.USState}`,{
-        method:'GET',
-
-        headers:{
-            'Content-Type': 'application/json'
-        },
-
-    }).then(response=>response.json())
-    .then(data=>{
-        data.forEach((brewery: Brewery) => {
-            let liEl= document.createElement('li')
 
 
 
-            let h2El= document.createElement('h2')
-            h2El.textContent=brewery.name
-
-            let divTypeEl= document.createElement('div')
-            divTypeEl.classList.add('type')
-            divTypeEl.textContent= 'brewery.brewery_type'
-
-            let adressSection= document.createElement('section')
-            adressSection.className=('adress')
-
-            let h3El= document.createElement('h3')
-            h3El.textContent='Adress:'
-
-            let pEl= document.createElement('p')
-            pEl.textContent= brewery.street
-
-            let paraEl= document.createElement('p')
-            paraEl.textContent= `${brewery.city}`
-                
-
-            let phoneSection= document.createElement('section')
-            phoneSection.classList.add('phone')
-
-            let h3PhoneEl= document.createElement('h3')
-            h3PhoneEl.textContent= 'Phone:'
-
-            let paragraphPhone= document.createElement('p')
-            paragraphPhone.textContent=brewery.phone
-
-            
-        });
-    })
-    
-
-}
 
 
-function render(){
-    let mainEl= document.querySelector('main')
-    if (mainEl=== null) return
-    mainEl.textContent= ''
 
 
-    renderHeader ()
 
 
-}
-render()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
